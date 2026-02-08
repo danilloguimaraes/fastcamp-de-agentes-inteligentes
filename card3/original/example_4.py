@@ -67,6 +67,8 @@ async def get_user(user_id: UUID4) -> User | JSONResponse:
 def main() -> None:
     with TestClient(app) as client:
         for i in range(5):
+
+            print(f"Creating user {i}")
             response = client.post(
                 "/users",
                 json={"name": f"User {i}", "email": f"example{i}@arjancodes.com"},
@@ -82,6 +84,10 @@ def main() -> None:
             assert user.signup_ts, "The signup timestamp should be set"
             assert user.friends == [], "The friends list should be empty"
             assert user.blocked == [], "The blocked list should be empty"
+
+            print(f"User {i} created")
+            print(user)
+            print("--------------------------------")
 
         response = client.get("/users")
         assert response.status_code == 200, "Response code should be 200"
