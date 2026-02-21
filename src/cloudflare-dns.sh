@@ -9,7 +9,11 @@ CF_ZONE_ID="${CF_ZONE_ID:-}"
 CF_PROXIED="${CF_PROXIED:-false}"
 
 sanitize() {
-  printf "%s" "$1" | tr -d '\r\n'
+  python3 -c 'import sys
+v=sys.argv[1].replace("\r","").replace("\n","").strip()
+if (len(v) >= 2) and ((v[0] == v[-1]) and v[0] in "\"'"):
+    v=v[1:-1]
+print(v, end="")' "$1"
 }
 
 urlencode() {
@@ -56,6 +60,27 @@ api() {
     -H "Content-Type: application/json"
 }
 
+api_get() {
+  local endpoint="$1"
+  shift
+  local base_url="https://api.cloudflare.com/client/v4${endpoint}"
+  local args=(
+    -sS -X GET "${base_url}"
+    -H "Authorization: Bearer ${CF_API_TOKEN}"
+    -H "Content-Type: application/json"
+  )
+
+  if [[ $# -gt 0 ]]; then
+    args+=(--get)
+    while [[ $# -gt 0 ]]; do
+      args+=(--data-urlencode "$1")
+      shift
+    done
+  fi
+
+  curl "${args[@]}"
+}
+
 assert_success() {
   local response="$1"
   python3 -c 'import json,sys; d=json.loads(sys.argv[1]); 
@@ -75,7 +100,7 @@ resolve_zone_id() {
   fi
 
   local response
-  response="$(api GET "/zones?name=$(urlencode "${zone_input}")")"
+  response="$(api_get "/zones" "name=${zone_input}")"
   assert_success "${response}"
 
   local resolved
@@ -93,7 +118,7 @@ upsert_a_record() {
   local proxied="$2"
 
   local list_response
-  list_response="$(api GET "/zones/${CF_ZONE_ID}/dns_records?type=A&name=$(urlencode "${name}")")"
+  list_response="$(api_get "/zones/${CF_ZONE_ID}/dns_records" "type=A" "name=${name}")"
   assert_success "${list_response}"
 
   local record_id
