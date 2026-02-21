@@ -9,15 +9,20 @@ CF_ZONE_ID="${CF_ZONE_ID:-}"
 CF_PROXIED="${CF_PROXIED:-false}"
 
 sanitize() {
-  python3 -c 'import sys
-v=sys.argv[1].replace("\r","").replace("\n","").strip()
-if (len(v) >= 2) and ((v[0] == v[-1]) and v[0] in "\"'"):
-    v=v[1:-1]
-print(v, end="")' "$1"
-}
+  local v="$1"
+  v="${v//$'\r'/}"
+  v="${v//$'\n'/}"
+  v="$(printf "%s" "${v}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
-urlencode() {
-  python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
+  if [[ ${#v} -ge 2 ]]; then
+    local first="${v:0:1}"
+    local last="${v: -1}"
+    if [[ ("${first}" == '"' && "${last}" == '"') || ("${first}" == "'" && "${last}" == "'") ]]; then
+      v="${v:1:${#v}-2}"
+    fi
+  fi
+
+  printf "%s" "${v}"
 }
 
 ROOT_DOMAIN="$(sanitize "${ROOT_DOMAIN}")"
