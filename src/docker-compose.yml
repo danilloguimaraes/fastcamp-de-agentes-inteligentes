@@ -23,7 +23,6 @@ services:
       GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
       TZ: ${TZ}
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
-      N8N_RUNNERS_ENABLED: "true"
       DB_TYPE: postgresdb
       DB_POSTGRESDB_DATABASE: ${POSTGRES_DATABASE}
       DB_POSTGRESDB_HOST: postgres
@@ -34,6 +33,7 @@ services:
       N8N_HOST: ${N8N_HOST}
       N8N_PROTOCOL: ${N8N_PROTOCOL}
       N8N_PORT: ${N8N_PORT}
+      N8N_EDITOR_BASE_URL: ${N8N_EDITOR_BASE_URL}
       WEBHOOK_URL: ${WEBHOOK_URL}
     depends_on:
       - postgres

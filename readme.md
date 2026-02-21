@@ -35,6 +35,8 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - Configure o arquivo `.env` com:
 - `ROOT_DOMAIN=fc.danilloguimaraes.com.br`
 - `N8N_DOMAIN=n8n.fc.danilloguimaraes.com.br`
+- `N8N_PORT=5678` (porta interna do container)
+- `N8N_EDITOR_BASE_URL=https://n8n.fc.danilloguimaraes.com.br/`
 - `SERVER_IP=<ip-publico-da-vm>`
 - `LETSENCRYPT_EMAIL=<seu-email>`
 - `CF_API_TOKEN=<token-cloudflare-com-zone-dns-edit>`
