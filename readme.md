@@ -29,11 +29,26 @@ As atividades dos cards estão disponíveis no diretório [atividades_aulas](./a
 O código fonte do projeto está disponível no diretório [src](./src/)
 
 ### Deploy n8n com Nginx + domínio
-- Atualize o arquivo `src/.env` com:
-- `SERVER_IP` (IP público da VM)
-- `LETSENCRYPT_EMAIL`
-- `CF_API_TOKEN` e `CF_ZONE_ID` (Cloudflare)
-- Execução automatizada (Cloudflare DNS cinza + deploy + Nginx/SSL + UFW + healthcheck):
-- `cd src && make bootstrap`
-- Após SSL emitido, habilite proxy laranja no Cloudflare:
-- `cd src && make cloudflare-dns-orange`
+- Use sempre o diretório desejado no servidor (exemplo):
+- `cd /root/workspace/fastcamp-de-agentes-inteligentes/src`
+
+- Configure o arquivo `.env` com:
+- `ROOT_DOMAIN=fc.danilloguimaraes.com.br`
+- `N8N_DOMAIN=n8n.fc.danilloguimaraes.com.br`
+- `SERVER_IP=<ip-publico-da-vm>`
+- `LETSENCRYPT_EMAIL=<seu-email>`
+- `CF_API_TOKEN=<token-cloudflare-com-zone-dns-edit>`
+- `CF_ZONE_ID=danilloguimaraes.com.br` (ou o Zone ID em formato UUID)
+
+- Fluxo automatizado (DNS cinza + deploy + Nginx/SSL + UFW + healthcheck):
+- `make bootstrap`
+
+- Depois de emitir o certificado SSL, habilite o proxy laranja:
+- `make cloudflare-dns-orange`
+
+- Se quiser validar manualmente:
+- `make healthcheck`
+- `HEALTHCHECK_RETRIES=24 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
+
+- Segurança:
+- após concluir a configuração, revogue o token Cloudflare usado no bootstrap e gere um novo token.
