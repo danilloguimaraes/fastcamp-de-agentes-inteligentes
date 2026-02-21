@@ -7,7 +7,7 @@ include $(ENV_FILE)
 export
 endif
 
-.PHONY: deploy setup-nginx setup-firewall healthcheck cloudflare-dns-gray cloudflare-dns-orange bootstrap
+.PHONY: deploy setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange bootstrap bootstrap-complete
 
 deploy:
 	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" down -v
@@ -25,6 +25,10 @@ healthcheck:
 	chmod +x "$(MAKEFILE_DIR)healthcheck.sh"
 	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" "$(MAKEFILE_DIR)healthcheck.sh"
 
+validate-final:
+	chmod +x "$(MAKEFILE_DIR)validate-final.sh"
+	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" "$(MAKEFILE_DIR)validate-final.sh"
+
 cloudflare-dns-gray:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
 	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
@@ -39,3 +43,8 @@ bootstrap:
 	$(MAKE) setup-nginx
 	$(MAKE) setup-firewall
 	$(MAKE) healthcheck
+
+bootstrap-complete:
+	$(MAKE) bootstrap
+	$(MAKE) cloudflare-dns-orange
+	$(MAKE) validate-final

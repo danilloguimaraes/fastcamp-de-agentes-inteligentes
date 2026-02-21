@@ -42,13 +42,22 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 
 - Fluxo automatizado (DNS cinza + deploy + Nginx/SSL + UFW + healthcheck):
 - `make bootstrap`
+- Esse passo cria/atualiza dois registros no Cloudflare:
+- `fc.danilloguimaraes.com.br`
+- `n8n.fc.danilloguimaraes.com.br`
 
 - Depois de emitir o certificado SSL, habilite o proxy laranja:
 - `make cloudflare-dns-orange`
 
+- Fluxo completo em um comando (inclui proxy laranja ao final):
+- `make bootstrap-complete`
+- Esse fluxo agora executa validação final automática (`docker compose ps` + checks HTTP).
+
 - Se quiser validar manualmente:
 - `make healthcheck`
 - `HEALTHCHECK_RETRIES=24 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
+- `make validate-final`
+- `VALIDATE_RETRIES=24 VALIDATE_DELAY_SECONDS=5 make validate-final`
 
 - Segurança:
 - após concluir a configuração, revogue o token Cloudflare usado no bootstrap e gere um novo token.
