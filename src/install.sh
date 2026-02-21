@@ -15,7 +15,7 @@ fi
 
 echo "Atualizando pacotes e instalando dependencias..."
 sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
+sudo apt-get install -y ca-certificates curl gnupg lsb-release make
 
 echo "Configurando chave GPG e repositorio oficial do Docker..."
 sudo install -m 0755 -d /etc/apt/keyrings
