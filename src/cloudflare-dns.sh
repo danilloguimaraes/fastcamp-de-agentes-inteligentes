@@ -50,6 +50,29 @@ print("" if ok else ("Cloudflare API erro: " + str(errs)))
 sys.exit(0 if ok else 1)' "${response}"
 }
 
+resolve_zone_id() {
+  local zone_input="$1"
+  local zone_id_regex='^[a-fA-F0-9]{32}$'
+
+  if [[ "${zone_input}" =~ ${zone_id_regex} ]]; then
+    echo "${zone_input}"
+    return
+  fi
+
+  local response
+  response="$(api GET "/zones?name=${zone_input}")"
+  assert_success "${response}"
+
+  local resolved
+  resolved="$(python3 -c 'import json,sys; d=json.loads(sys.argv[1]); r=d.get("result", []); print(r[0]["id"] if r else "")' "${response}")"
+  if [[ -z "${resolved}" ]]; then
+    echo "Nao foi possivel resolver o zone id para '${zone_input}'." >&2
+    exit 1
+  fi
+
+  echo "${resolved}"
+}
+
 upsert_a_record() {
   local name="$1"
   local proxied="$2"
@@ -78,6 +101,7 @@ upsert_a_record() {
 }
 
 echo "Configurando DNS no Cloudflare..."
+CF_ZONE_ID="$(resolve_zone_id "${CF_ZONE_ID}")"
 upsert_a_record "${ROOT_DOMAIN}" "${CF_PROXIED}"
 upsert_a_record "${N8N_DOMAIN}" "${CF_PROXIED}"
 echo "DNS Cloudflare concluido."
