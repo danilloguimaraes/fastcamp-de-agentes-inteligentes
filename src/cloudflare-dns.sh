@@ -8,6 +8,21 @@ CF_API_TOKEN="${CF_API_TOKEN:-}"
 CF_ZONE_ID="${CF_ZONE_ID:-}"
 CF_PROXIED="${CF_PROXIED:-false}"
 
+sanitize() {
+  printf "%s" "$1" | tr -d '\r\n'
+}
+
+urlencode() {
+  python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
+}
+
+ROOT_DOMAIN="$(sanitize "${ROOT_DOMAIN}")"
+N8N_DOMAIN="$(sanitize "${N8N_DOMAIN}")"
+SERVER_IP="$(sanitize "${SERVER_IP}")"
+CF_API_TOKEN="$(sanitize "${CF_API_TOKEN}")"
+CF_ZONE_ID="$(sanitize "${CF_ZONE_ID}")"
+CF_PROXIED="$(sanitize "${CF_PROXIED}")"
+
 if [[ -z "${SERVER_IP}" || -z "${CF_API_TOKEN}" || -z "${CF_ZONE_ID}" ]]; then
   echo "Defina SERVER_IP, CF_API_TOKEN e CF_ZONE_ID antes de executar."
   exit 1
@@ -60,7 +75,7 @@ resolve_zone_id() {
   fi
 
   local response
-  response="$(api GET "/zones?name=${zone_input}")"
+  response="$(api GET "/zones?name=$(urlencode "${zone_input}")")"
   assert_success "${response}"
 
   local resolved
@@ -78,7 +93,7 @@ upsert_a_record() {
   local proxied="$2"
 
   local list_response
-  list_response="$(api GET "/zones/${CF_ZONE_ID}/dns_records?type=A&name=${name}")"
+  list_response="$(api GET "/zones/${CF_ZONE_ID}/dns_records?type=A&name=$(urlencode "${name}")")"
   assert_success "${list_response}"
 
   local record_id
