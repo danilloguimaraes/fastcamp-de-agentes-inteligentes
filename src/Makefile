@@ -7,9 +7,13 @@ include $(ENV_FILE)
 export
 endif
 
-.PHONY: deploy setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange bootstrap bootstrap-complete
+.PHONY: deploy deploy-reset setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange bootstrap bootstrap-complete
 
 deploy:
+	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" down
+	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" up -d
+
+deploy-reset:
 	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" down -v
 	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" up -d
 

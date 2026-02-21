@@ -42,6 +42,8 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 
 - Fluxo automatizado (DNS cinza + deploy + Nginx/SSL + UFW + healthcheck):
 - `make bootstrap`
+- O `deploy` padrao preserva volumes para evitar startup lento em toda execucao.
+- Para reset completo de dados (Postgres/n8n), use `make deploy-reset`.
 - Esse passo cria/atualiza dois registros no Cloudflare:
 - `fc.danilloguimaraes.com.br`
 - `n8n.fc.danilloguimaraes.com.br`
@@ -55,7 +57,7 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 
 - Se quiser validar manualmente:
 - `make healthcheck`
-- `HEALTHCHECK_RETRIES=24 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
+- `HEALTHCHECK_RETRIES=60 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
 - `make validate-final`
 - `VALIDATE_RETRIES=24 VALIDATE_DELAY_SECONDS=5 make validate-final`
 
