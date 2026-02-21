@@ -88,11 +88,13 @@ api_get() {
 
 assert_success() {
   local response="$1"
-  python3 -c 'import json,sys; d=json.loads(sys.argv[1]); 
+  python3 -c 'import json,sys
+d=json.loads(sys.argv[1])
 ok=d.get("success", False)
 errs=d.get("errors", [])
-print("" if ok else ("Cloudflare API erro: " + str(errs)))
-sys.exit(0 if ok else 1)' "${response}"
+if not ok:
+    print("Cloudflare API erro: " + str(errs), file=sys.stderr)
+    sys.exit(1)' "${response}"
 }
 
 resolve_zone_id() {
