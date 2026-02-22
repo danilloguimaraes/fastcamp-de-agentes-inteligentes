@@ -57,6 +57,10 @@ services:
       WHATSAPP_API_KEY: ${WAHA_API_KEY:-change-me}
       WAHA_MEDIA_STORAGE: ${WAHA_MEDIA_STORAGE:-POSTGRESQL}
       WAHA_MEDIA_POSTGRESQL_URL: ${WAHA_MEDIA_POSTGRESQL_URL:-postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USERNAME:-admin}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD:-change-me}
+      WHATSAPP_SWAGGER_USERNAME: ${WHATSAPP_SWAGGER_USERNAME:-admin}
+      WHATSAPP_SWAGGER_PASSWORD: ${WHATSAPP_SWAGGER_PASSWORD:-change-me}
     volumes:
       - waha_sessions_data:/app/.sessions
     depends_on:

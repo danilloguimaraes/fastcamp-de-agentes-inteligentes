@@ -41,6 +41,10 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - `WAHA_API_KEY=<sua-chave-waha>`
 - `WAHA_MEDIA_STORAGE=POSTGRESQL`
 - `WAHA_MEDIA_POSTGRESQL_URL=postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable`
+- `WAHA_DASHBOARD_USERNAME=admin`
+- `WAHA_DASHBOARD_PASSWORD=<senha-forte>`
+- `WHATSAPP_SWAGGER_USERNAME=admin`
+- `WHATSAPP_SWAGGER_PASSWORD=<senha-forte>`
 - `SERVER_IP=<ip-publico-da-vm>`
 - `LETSENCRYPT_EMAIL=<seu-email>`
 - `LE_STAGING=false` (use `true` para testes sem consumir cota de producao)
