@@ -33,7 +33,14 @@ CF_ZONE_ID="$(sanitize "${CF_ZONE_ID}")"
 CF_PROXIED="$(sanitize "${CF_PROXIED}")"
 
 if [[ -z "${SERVER_IP}" || -z "${CF_API_TOKEN}" || -z "${CF_ZONE_ID}" ]]; then
-  echo "Defina SERVER_IP, CF_API_TOKEN e CF_ZONE_ID antes de executar."
+  if [[ -z "${SERVER_IP}" ]]; then
+    SERVER_IP="$(curl -fsS --max-time 10 https://api.ipify.org || true)"
+    SERVER_IP="$(sanitize "${SERVER_IP}")"
+  fi
+fi
+
+if [[ -z "${SERVER_IP}" || -z "${CF_API_TOKEN}" || -z "${CF_ZONE_ID}" ]]; then
+  echo "Defina SERVER_IP, CF_API_TOKEN e CF_ZONE_ID antes de executar. (SERVER_IP pode ser autodetectado pela api.ipify.org)"
   exit 1
 fi
 
