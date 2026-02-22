@@ -41,9 +41,22 @@ services:
     networks:
       - n8n-network-youtube
 
+  waha:
+    image: devlikeapro/waha:latest
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      WHATSAPP_API_KEY: ${WAHA_API_KEY}
+    volumes:
+      - waha_data:/app/.sessions
+    restart: unless-stopped
+    networks:
+      - n8n-network-youtube
+
 volumes:
   n8n_data:
   postgres_data:
+  waha_data:
  
 networks:
   n8n-network-youtube:
