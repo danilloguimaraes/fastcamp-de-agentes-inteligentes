@@ -1,0 +1,55 @@
+# Deploy n8n com Nginx + domínio
+- Use sempre o diretório desejado no servidor (exemplo):
+- `cd /root/workspace/fastcamp-de-agentes-inteligentes/src`
+
+- Configure o arquivo `.env` com:
+- `ROOT_DOMAIN=fc.danilloguimaraes.com.br`
+- `N8N_DOMAIN=n8n.fc.danilloguimaraes.com.br`
+- `WAHA_DOMAIN=waha.fc.danilloguimaraes.com.br`
+- `N8N_PORT=5678` (porta interna do container)
+- `N8N_EDITOR_BASE_URL=https://n8n.fc.danilloguimaraes.com.br/`
+- `WAHA_API_KEY=<sua-chave-waha>`
+- `WAHA_MEDIA_STORAGE=POSTGRESQL`
+- `WAHA_MEDIA_POSTGRESQL_URL=postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable`
+- `WAHA_DASHBOARD_USERNAME=admin`
+- `WAHA_DASHBOARD_PASSWORD=<senha-forte>`
+- `WHATSAPP_SWAGGER_USERNAME=admin`
+- `WHATSAPP_SWAGGER_PASSWORD=<senha-forte>`
+- `SERVER_IP=<ip-publico-da-vm>`
+- `LETSENCRYPT_EMAIL=<seu-email>`
+- `LE_STAGING=false` (use `true` para testes sem consumir cota de producao)
+- `CF_API_TOKEN=<token-cloudflare-com-zone-dns-edit>`
+- `CF_ZONE_ID=danilloguimaraes.com.br` (ou o Zone ID em formato UUID)
+
+- Fluxo automatizado (DNS cinza + deploy + Nginx/SSL + UFW + healthcheck):
+- `make bootstrap`
+- O `deploy` padrao preserva volumes para evitar startup lento em toda execucao.
+- Para reset completo de dados (Postgres/n8n), use `make deploy-reset`.
+- Esse passo cria/atualiza dois registros no Cloudflare:
+- `fc.danilloguimaraes.com.br`
+- `n8n.fc.danilloguimaraes.com.br`
+- `waha.fc.danilloguimaraes.com.br`
+
+- Depois de emitir o certificado SSL, habilite o proxy laranja de forma segura:
+- `make cloudflare-dns-orange-safe`
+- Isso deixa `fc.danilloguimaraes.com.br` em laranja e `n8n.fc.danilloguimaraes.com.br`/`waha.fc.danilloguimaraes.com.br` em cinza.
+- Motivo: o wildcard SSL universal da Cloudflare nao cobre `n8n.fc.*` e `waha.fc.*` sem certificado avancado.
+- Se voce ja tiver certificado Cloudflare que cubra `*.fc.danilloguimaraes.com.br`, use:
+- `make cloudflare-dns-orange-all`
+
+- Fluxo completo em um comando (inclui proxy laranja seguro ao final):
+- `make bootstrap-complete`
+- Esse fluxo agora executa validação final automática (`docker compose ps` + checks HTTP).
+- O setup do Nginx executa certbot por dominio (independente) com `--cert-name` fixo e `--keep-until-expiring`, evitando renovacao desnecessaria e novos lineages.
+- Para executar somente a etapa de certificados: `make setup-nginx-certs`
+
+- Se quiser validar manualmente:
+- `make healthcheck`
+- `HEALTHCHECK_RETRIES=60 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
+- `make validate-final`
+- `VALIDATE_RETRIES=24 VALIDATE_DELAY_SECONDS=5 make validate-final`
+- Quando `SERVER_IP` estiver definido, os checks HTTPS usam `--resolve` para validar a origem e evitar falso negativo por propagacao/DNS do Cloudflare.
+- Para WAHA, HTTP `401/403` e considerado saudavel (API protegida por chave).
+
+- Segurança:
+- após concluir a configuração, revogue o token Cloudflare usado no bootstrap e gere um novo token.
