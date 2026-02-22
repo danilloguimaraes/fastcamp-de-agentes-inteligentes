@@ -3,7 +3,9 @@ set -euo pipefail
 
 ROOT_DOMAIN="${ROOT_DOMAIN:-fc.danilloguimaraes.com.br}"
 N8N_DOMAIN="${N8N_DOMAIN:-n8n.fc.danilloguimaraes.com.br}"
+WAHA_DOMAIN="${WAHA_DOMAIN:-waha.fc.danilloguimaraes.com.br}"
 N8N_UPSTREAM_URL="${N8N_UPSTREAM_URL:-http://127.0.0.1:5678}"
+WAHA_UPSTREAM_URL="${WAHA_UPSTREAM_URL:-http://127.0.0.1:3000}"
 SERVER_IP="${SERVER_IP:-}"
 VALIDATE_RETRIES="${VALIDATE_RETRIES:-12}"
 VALIDATE_DELAY_SECONDS="${VALIDATE_DELAY_SECONDS:-5}"
@@ -54,7 +56,9 @@ docker compose ps
 
 echo "Validando endpoints finais..."
 check_http_with_retry "${N8N_UPSTREAM_URL}" "n8n local"
+check_http_with_retry "${WAHA_UPSTREAM_URL}" "waha local"
 check_https_public "${ROOT_DOMAIN}" "dominio principal"
 check_https_public "${N8N_DOMAIN}" "n8n publico"
+check_https_public "${WAHA_DOMAIN}" "waha publico"
 
 echo "Validacao final concluida."

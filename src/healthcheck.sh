@@ -3,7 +3,9 @@ set -euo pipefail
 
 ROOT_DOMAIN="${ROOT_DOMAIN:-fc.danilloguimaraes.com.br}"
 N8N_DOMAIN="${N8N_DOMAIN:-n8n.fc.danilloguimaraes.com.br}"
+WAHA_DOMAIN="${WAHA_DOMAIN:-waha.fc.danilloguimaraes.com.br}"
 N8N_UPSTREAM_URL="${N8N_UPSTREAM_URL:-http://127.0.0.1:5678}"
+WAHA_UPSTREAM_URL="${WAHA_UPSTREAM_URL:-http://127.0.0.1:3000}"
 SERVER_IP="${SERVER_IP:-}"
 HEALTHCHECK_RETRIES="${HEALTHCHECK_RETRIES:-60}"
 HEALTHCHECK_DELAY_SECONDS="${HEALTHCHECK_DELAY_SECONDS:-5}"
@@ -68,7 +70,9 @@ docker ps >/dev/null
 
 echo "Validando endpoints..."
 check_http_with_retry "${N8N_UPSTREAM_URL}" "n8n local"
+check_http_with_retry "${WAHA_UPSTREAM_URL}" "waha local"
 check_https_public "${ROOT_DOMAIN}" "dominio principal"
 check_https_public "${N8N_DOMAIN}" "n8n publico"
+check_https_public "${WAHA_DOMAIN}" "waha publico"
 
 echo "Healthcheck concluido."

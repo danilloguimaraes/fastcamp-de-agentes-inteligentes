@@ -35,10 +35,15 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - Configure o arquivo `.env` com:
 - `ROOT_DOMAIN=fc.danilloguimaraes.com.br`
 - `N8N_DOMAIN=n8n.fc.danilloguimaraes.com.br`
+- `WAHA_DOMAIN=waha.fc.danilloguimaraes.com.br`
 - `N8N_PORT=5678` (porta interna do container)
 - `N8N_EDITOR_BASE_URL=https://n8n.fc.danilloguimaraes.com.br/`
+- `WAHA_API_KEY=<sua-chave-waha>`
+- `WAHA_MEDIA_STORAGE=POSTGRESQL`
+- `WAHA_MEDIA_POSTGRESQL_URL=postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable`
 - `SERVER_IP=<ip-publico-da-vm>`
 - `LETSENCRYPT_EMAIL=<seu-email>`
+- `CERT_RENEW_WINDOW_DAYS=30` (opcional, janela para renovar cert por dominio)
 - `CF_API_TOKEN=<token-cloudflare-com-zone-dns-edit>`
 - `CF_ZONE_ID=danilloguimaraes.com.br` (ou o Zone ID em formato UUID)
 
@@ -49,17 +54,19 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - Esse passo cria/atualiza dois registros no Cloudflare:
 - `fc.danilloguimaraes.com.br`
 - `n8n.fc.danilloguimaraes.com.br`
+- `waha.fc.danilloguimaraes.com.br`
 
 - Depois de emitir o certificado SSL, habilite o proxy laranja de forma segura:
 - `make cloudflare-dns-orange-safe`
-- Isso deixa `fc.danilloguimaraes.com.br` em laranja e `n8n.fc.danilloguimaraes.com.br` em cinza.
-- Motivo: o wildcard SSL universal da Cloudflare nao cobre `n8n.fc.*` sem certificado avancado.
+- Isso deixa `fc.danilloguimaraes.com.br` em laranja e `n8n.fc.danilloguimaraes.com.br`/`waha.fc.danilloguimaraes.com.br` em cinza.
+- Motivo: o wildcard SSL universal da Cloudflare nao cobre `n8n.fc.*` e `waha.fc.*` sem certificado avancado.
 - Se voce ja tiver certificado Cloudflare que cubra `*.fc.danilloguimaraes.com.br`, use:
 - `make cloudflare-dns-orange-all`
 
 - Fluxo completo em um comando (inclui proxy laranja seguro ao final):
 - `make bootstrap-complete`
 - Esse fluxo agora executa validação final automática (`docker compose ps` + checks HTTP).
+- O setup do Nginx analisa cada dominio separadamente e so chama o certbot para os dominios sem cert valido ou proximos da expiração.
 
 - Se quiser validar manualmente:
 - `make healthcheck`

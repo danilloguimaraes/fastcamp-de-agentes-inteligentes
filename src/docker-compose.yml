@@ -43,15 +43,24 @@ services:
 
   waha:
     image: devlikeapro/waha:latest
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
     ports:
       - "127.0.0.1:3000:3000"
     environment:
       WHATSAPP_API_KEY: ${WAHA_API_KEY}
-      WHATSAPP_DEFAULT_ENGINE: NOWEB
-      WHATSAPP_HOOK_EVENTS: message
-      WHATSAPP_HOOK_URL: ${WEBHOOK_URL}
+      WAHA_MEDIA_STORAGE: ${WAHA_MEDIA_STORAGE}
+      WAHA_MEDIA_POSTGRESQL_URL: ${WAHA_MEDIA_POSTGRESQL_URL}
     volumes:
-      - waha_data:/tmp
+      - waha_sessions_data:/app/.sessions
+    depends_on:
+      - postgres
     restart: unless-stopped
     networks:
       - n8n-network-youtube
@@ -59,7 +68,7 @@ services:
 volumes:
   n8n_data:
   postgres_data:
-  waha_data:
+  waha_sessions_data:
  
 networks:
   n8n-network-youtube:

@@ -19,7 +19,7 @@ deploy-reset:
 
 setup-nginx:
 	chmod +x "$(MAKEFILE_DIR)setup-nginx.sh"
-	LETSENCRYPT_EMAIL="$(LETSENCRYPT_EMAIL)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" "$(MAKEFILE_DIR)setup-nginx.sh"
+	LETSENCRYPT_EMAIL="$(LETSENCRYPT_EMAIL)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" "$(MAKEFILE_DIR)setup-nginx.sh"
 
 setup-firewall:
 	chmod +x "$(MAKEFILE_DIR)setup-firewall.sh"
@@ -27,23 +27,23 @@ setup-firewall:
 
 healthcheck:
 	chmod +x "$(MAKEFILE_DIR)healthcheck.sh"
-	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)healthcheck.sh"
+	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)healthcheck.sh"
 
 validate-final:
 	chmod +x "$(MAKEFILE_DIR)validate-final.sh"
-	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)validate-final.sh"
+	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)validate-final.sh"
 
 cloudflare-dns-gray:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
-	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
+	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" ROOT_CF_PROXIED=false N8N_CF_PROXIED=false WAHA_CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
 
 cloudflare-dns-orange-safe:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
-	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
+	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=false WAHA_CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
 
 cloudflare-dns-orange-all:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
-	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=true "$(MAKEFILE_DIR)cloudflare-dns.sh"
+	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=true WAHA_CF_PROXIED=true "$(MAKEFILE_DIR)cloudflare-dns.sh"
 
 bootstrap:
 	$(MAKE) cloudflare-dns-gray

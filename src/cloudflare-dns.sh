@@ -3,12 +3,14 @@ set -euo pipefail
 
 ROOT_DOMAIN="${ROOT_DOMAIN:-fc.danilloguimaraes.com.br}"
 N8N_DOMAIN="${N8N_DOMAIN:-n8n.fc.danilloguimaraes.com.br}"
+WAHA_DOMAIN="${WAHA_DOMAIN:-waha.fc.danilloguimaraes.com.br}"
 SERVER_IP="${SERVER_IP:-}"
 CF_API_TOKEN="${CF_API_TOKEN:-}"
 CF_ZONE_ID="${CF_ZONE_ID:-}"
 CF_PROXIED="${CF_PROXIED:-false}"
 ROOT_CF_PROXIED="${ROOT_CF_PROXIED:-${CF_PROXIED}}"
 N8N_CF_PROXIED="${N8N_CF_PROXIED:-${CF_PROXIED}}"
+WAHA_CF_PROXIED="${WAHA_CF_PROXIED:-${CF_PROXIED}}"
 
 sanitize() {
   local v="$1"
@@ -29,12 +31,14 @@ sanitize() {
 
 ROOT_DOMAIN="$(sanitize "${ROOT_DOMAIN}")"
 N8N_DOMAIN="$(sanitize "${N8N_DOMAIN}")"
+WAHA_DOMAIN="$(sanitize "${WAHA_DOMAIN}")"
 SERVER_IP="$(sanitize "${SERVER_IP}")"
 CF_API_TOKEN="$(sanitize "${CF_API_TOKEN}")"
 CF_ZONE_ID="$(sanitize "${CF_ZONE_ID}")"
 CF_PROXIED="$(sanitize "${CF_PROXIED}")"
 ROOT_CF_PROXIED="$(sanitize "${ROOT_CF_PROXIED}")"
 N8N_CF_PROXIED="$(sanitize "${N8N_CF_PROXIED}")"
+WAHA_CF_PROXIED="$(sanitize "${WAHA_CF_PROXIED}")"
 
 if [[ -z "${SERVER_IP}" || -z "${CF_API_TOKEN}" || -z "${CF_ZONE_ID}" ]]; then
   if [[ -z "${SERVER_IP}" ]]; then
@@ -162,4 +166,5 @@ echo "Configurando DNS no Cloudflare..."
 CF_ZONE_ID="$(resolve_zone_id "${CF_ZONE_ID}")"
 upsert_a_record "${ROOT_DOMAIN}" "${ROOT_CF_PROXIED}"
 upsert_a_record "${N8N_DOMAIN}" "${N8N_CF_PROXIED}"
+upsert_a_record "${WAHA_DOMAIN}" "${WAHA_CF_PROXIED}"
 echo "DNS Cloudflare concluido."
