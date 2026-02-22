@@ -7,6 +7,8 @@ SERVER_IP="${SERVER_IP:-}"
 CF_API_TOKEN="${CF_API_TOKEN:-}"
 CF_ZONE_ID="${CF_ZONE_ID:-}"
 CF_PROXIED="${CF_PROXIED:-false}"
+ROOT_CF_PROXIED="${ROOT_CF_PROXIED:-${CF_PROXIED}}"
+N8N_CF_PROXIED="${N8N_CF_PROXIED:-${CF_PROXIED}}"
 
 sanitize() {
   local v="$1"
@@ -31,6 +33,8 @@ SERVER_IP="$(sanitize "${SERVER_IP}")"
 CF_API_TOKEN="$(sanitize "${CF_API_TOKEN}")"
 CF_ZONE_ID="$(sanitize "${CF_ZONE_ID}")"
 CF_PROXIED="$(sanitize "${CF_PROXIED}")"
+ROOT_CF_PROXIED="$(sanitize "${ROOT_CF_PROXIED}")"
+N8N_CF_PROXIED="$(sanitize "${N8N_CF_PROXIED}")"
 
 if [[ -z "${SERVER_IP}" || -z "${CF_API_TOKEN}" || -z "${CF_ZONE_ID}" ]]; then
   if [[ -z "${SERVER_IP}" ]]; then
@@ -156,6 +160,6 @@ upsert_a_record() {
 
 echo "Configurando DNS no Cloudflare..."
 CF_ZONE_ID="$(resolve_zone_id "${CF_ZONE_ID}")"
-upsert_a_record "${ROOT_DOMAIN}" "${CF_PROXIED}"
-upsert_a_record "${N8N_DOMAIN}" "${CF_PROXIED}"
+upsert_a_record "${ROOT_DOMAIN}" "${ROOT_CF_PROXIED}"
+upsert_a_record "${N8N_DOMAIN}" "${N8N_CF_PROXIED}"
 echo "DNS Cloudflare concluido."

@@ -7,7 +7,7 @@ include $(ENV_FILE)
 export
 endif
 
-.PHONY: deploy deploy-reset setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange bootstrap bootstrap-complete
+.PHONY: deploy deploy-reset setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange-safe cloudflare-dns-orange-all bootstrap bootstrap-complete
 
 deploy:
 	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" down
@@ -37,9 +37,13 @@ cloudflare-dns-gray:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
 	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
 
-cloudflare-dns-orange:
+cloudflare-dns-orange-safe:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
-	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" CF_PROXIED=true "$(MAKEFILE_DIR)cloudflare-dns.sh"
+	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=false "$(MAKEFILE_DIR)cloudflare-dns.sh"
+
+cloudflare-dns-orange-all:
+	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
+	CF_API_TOKEN="$(CF_API_TOKEN)" CF_ZONE_ID="$(CF_ZONE_ID)" SERVER_IP="$(SERVER_IP)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" ROOT_CF_PROXIED=true N8N_CF_PROXIED=true "$(MAKEFILE_DIR)cloudflare-dns.sh"
 
 bootstrap:
 	$(MAKE) cloudflare-dns-gray
@@ -50,5 +54,5 @@ bootstrap:
 
 bootstrap-complete:
 	$(MAKE) bootstrap
-	$(MAKE) cloudflare-dns-orange
+	$(MAKE) cloudflare-dns-orange-safe
 	$(MAKE) validate-final

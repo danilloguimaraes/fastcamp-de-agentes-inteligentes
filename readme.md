@@ -50,10 +50,14 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - `fc.danilloguimaraes.com.br`
 - `n8n.fc.danilloguimaraes.com.br`
 
-- Depois de emitir o certificado SSL, habilite o proxy laranja:
-- `make cloudflare-dns-orange`
+- Depois de emitir o certificado SSL, habilite o proxy laranja de forma segura:
+- `make cloudflare-dns-orange-safe`
+- Isso deixa `fc.danilloguimaraes.com.br` em laranja e `n8n.fc.danilloguimaraes.com.br` em cinza.
+- Motivo: o wildcard SSL universal da Cloudflare nao cobre `n8n.fc.*` sem certificado avancado.
+- Se voce ja tiver certificado Cloudflare que cubra `*.fc.danilloguimaraes.com.br`, use:
+- `make cloudflare-dns-orange-all`
 
-- Fluxo completo em um comando (inclui proxy laranja ao final):
+- Fluxo completo em um comando (inclui proxy laranja seguro ao final):
 - `make bootstrap-complete`
 - Esse fluxo agora executa validação final automática (`docker compose ps` + checks HTTP).
 
