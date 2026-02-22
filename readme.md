@@ -43,7 +43,6 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - `WAHA_MEDIA_POSTGRESQL_URL=postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable`
 - `SERVER_IP=<ip-publico-da-vm>`
 - `LETSENCRYPT_EMAIL=<seu-email>`
-- `CERT_RENEW_WINDOW_DAYS=30` (opcional, janela para renovar cert por dominio)
 - `CF_API_TOKEN=<token-cloudflare-com-zone-dns-edit>`
 - `CF_ZONE_ID=danilloguimaraes.com.br` (ou o Zone ID em formato UUID)
 
@@ -66,7 +65,7 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - Fluxo completo em um comando (inclui proxy laranja seguro ao final):
 - `make bootstrap-complete`
 - Esse fluxo agora executa validação final automática (`docker compose ps` + checks HTTP).
-- O setup do Nginx analisa cada dominio separadamente e so chama o certbot para os dominios sem cert valido ou proximos da expiração.
+- O setup do Nginx executa certbot por dominio (independente) com `--keep-until-expiring`, evitando renovacao desnecessaria e prompt interativo.
 
 - Se quiser validar manualmente:
 - `make healthcheck`

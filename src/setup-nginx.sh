@@ -9,7 +9,6 @@ N8N_UPSTREAM_PORT="${N8N_UPSTREAM_PORT:-5678}"
 WAHA_UPSTREAM_HOST="${WAHA_UPSTREAM_HOST:-127.0.0.1}"
 WAHA_UPSTREAM_PORT="${WAHA_UPSTREAM_PORT:-3000}"
 LETSENCRYPT_EMAIL="${LETSENCRYPT_EMAIL:-}"
-CERT_RENEW_WINDOW_DAYS="${CERT_RENEW_WINDOW_DAYS:-30}"
 
 if [[ ! -f /etc/os-release ]]; then
   echo "Nao foi possivel identificar o sistema operacional."
@@ -28,27 +27,6 @@ sudo_cmd() {
   else
     sudo "$@"
   fi
-}
-
-domain_cert_is_valid() {
-  local domain="$1"
-  local renew_window_seconds=$((CERT_RENEW_WINDOW_DAYS * 24 * 60 * 60))
-  local cert_text
-
-  cert_text="$(echo | sudo_cmd openssl s_client -connect 127.0.0.1:443 -servername "${domain}" 2>/dev/null | openssl x509 -noout -text 2>/dev/null || true)"
-  if [[ -z "${cert_text}" ]]; then
-    return 1
-  fi
-
-  if ! printf "%s" "${cert_text}" | sed -n '/Subject Alternative Name/,+1p' | tr -d ' ' | grep -q "DNS:${domain}\(,\|$\)"; then
-    return 1
-  fi
-
-  if ! echo | sudo_cmd openssl s_client -connect 127.0.0.1:443 -servername "${domain}" 2>/dev/null | openssl x509 -noout -checkend "${renew_window_seconds}" >/dev/null 2>&1; then
-    return 1
-  fi
-
-  return 0
 }
 
 echo "Instalando Nginx e Certbot..."
@@ -128,33 +106,17 @@ sudo_cmd systemctl enable nginx
 sudo_cmd systemctl restart nginx
 
 if [[ -n "${LETSENCRYPT_EMAIL}" ]]; then
-  echo "Analisando validade dos certificados por dominio..."
-  domains_to_issue=()
+  echo "Analisando/emissao de certificado por dominio (independente)..."
   for domain in "${ROOT_DOMAIN}" "${N8N_DOMAIN}" "${WAHA_DOMAIN}"; do
-    if domain_cert_is_valid "${domain}"; then
-      echo "- Certificado valido para ${domain} (sem renovacao por enquanto)"
-    else
-      echo "- Dominio ${domain} precisa de emissao/renovacao"
-      domains_to_issue+=("${domain}")
-    fi
+    echo "- Processando ${domain}"
+    sudo_cmd certbot --nginx \
+      --non-interactive \
+      --agree-tos \
+      --email "${LETSENCRYPT_EMAIL}" \
+      --redirect \
+      --keep-until-expiring \
+      -d "${domain}"
   done
-
-  if [[ "${#domains_to_issue[@]}" -gt 0 ]]; then
-    echo "Emitindo/renovando certificado apenas para dominios necessarios..."
-    certbot_args=(
-      --nginx
-      --non-interactive
-      --agree-tos
-      --email "${LETSENCRYPT_EMAIL}"
-      --redirect
-    )
-    for domain in "${domains_to_issue[@]}"; do
-      certbot_args+=(-d "${domain}")
-    done
-    sudo_cmd certbot "${certbot_args[@]}"
-  else
-    echo "Todos os dominios ja possuem certificado valido. Pulando certbot."
-  fi
 else
   echo "LETSENCRYPT_EMAIL nao definido. Pulando emissao de certificado."
   echo "Exemplo: LETSENCRYPT_EMAIL=voce@dominio.com ./setup-nginx.sh"

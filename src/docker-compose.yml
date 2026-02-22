@@ -54,9 +54,9 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     environment:
-      WHATSAPP_API_KEY: ${WAHA_API_KEY}
-      WAHA_MEDIA_STORAGE: ${WAHA_MEDIA_STORAGE}
-      WAHA_MEDIA_POSTGRESQL_URL: ${WAHA_MEDIA_POSTGRESQL_URL}
+      WHATSAPP_API_KEY: ${WAHA_API_KEY:-change-me}
+      WAHA_MEDIA_STORAGE: ${WAHA_MEDIA_STORAGE:-POSTGRESQL}
+      WAHA_MEDIA_POSTGRESQL_URL: ${WAHA_MEDIA_POSTGRESQL_URL:-postgres://n8n:n8n@postgres:5432/n8n?sslmode=disable}
     volumes:
       - waha_sessions_data:/app/.sessions
     depends_on:
