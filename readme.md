@@ -66,6 +66,7 @@ O código fonte do projeto está disponível no diretório [src](./src/)
 - `HEALTHCHECK_RETRIES=60 HEALTHCHECK_DELAY_SECONDS=5 make healthcheck`
 - `make validate-final`
 - `VALIDATE_RETRIES=24 VALIDATE_DELAY_SECONDS=5 make validate-final`
+- Quando `SERVER_IP` estiver definido, os checks HTTPS usam `--resolve` para validar a origem e evitar falso negativo por propagacao/DNS do Cloudflare.
 
 - Segurança:
 - após concluir a configuração, revogue o token Cloudflare usado no bootstrap e gere um novo token.

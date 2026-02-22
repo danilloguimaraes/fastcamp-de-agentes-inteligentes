@@ -27,11 +27,11 @@ setup-firewall:
 
 healthcheck:
 	chmod +x "$(MAKEFILE_DIR)healthcheck.sh"
-	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" "$(MAKEFILE_DIR)healthcheck.sh"
+	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)healthcheck.sh"
 
 validate-final:
 	chmod +x "$(MAKEFILE_DIR)validate-final.sh"
-	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" "$(MAKEFILE_DIR)validate-final.sh"
+	ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" SERVER_IP="$(SERVER_IP)" "$(MAKEFILE_DIR)validate-final.sh"
 
 cloudflare-dns-gray:
 	chmod +x "$(MAKEFILE_DIR)cloudflare-dns.sh"
