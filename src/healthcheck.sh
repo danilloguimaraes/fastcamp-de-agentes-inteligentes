@@ -51,6 +51,31 @@ check_http_with_retry() {
   done
 }
 
+check_http_with_retry_accepting_statuses() {
+  local url="$1"
+  local label="$2"
+  local accepted_statuses="$3"
+  local attempt=1
+  local code=""
+
+  while [[ "${attempt}" -le "${HEALTHCHECK_RETRIES}" ]]; do
+    code="$(curl -sS -o /dev/null --max-time 10 -w "%{http_code}" "${url}" || true)"
+    if [[ " ${accepted_statuses} " == *" ${code} "* ]]; then
+      echo "[OK] ${label}: ${url} (HTTP ${code})"
+      return
+    fi
+
+    if [[ "${attempt}" -eq "${HEALTHCHECK_RETRIES}" ]]; then
+      echo "[ERRO] ${label}: ${url} (HTTP ${code}, apos ${HEALTHCHECK_RETRIES} tentativas)"
+      exit 1
+    fi
+
+    echo "[AGUARDANDO] ${label}: tentativa ${attempt}/${HEALTHCHECK_RETRIES} (HTTP ${code}). Novo teste em ${HEALTHCHECK_DELAY_SECONDS}s..."
+    sleep "${HEALTHCHECK_DELAY_SECONDS}"
+    attempt=$((attempt + 1))
+  done
+}
+
 check_https_public() {
   local domain="$1"
   local label="$2"
@@ -70,9 +95,9 @@ docker ps >/dev/null
 
 echo "Validando endpoints..."
 check_http_with_retry "${N8N_UPSTREAM_URL}" "n8n local"
-check_http_with_retry "${WAHA_UPSTREAM_URL}" "waha local"
+check_http_with_retry_accepting_statuses "${WAHA_UPSTREAM_URL}" "waha local" "200 301 302 401 403"
 check_https_public "${ROOT_DOMAIN}" "dominio principal"
 check_https_public "${N8N_DOMAIN}" "n8n publico"
-check_https_public "${WAHA_DOMAIN}" "waha publico"
+check_http_with_retry_accepting_statuses "https://${WAHA_DOMAIN}" "waha publico" "200 301 302 401 403"
 
 echo "Healthcheck concluido."

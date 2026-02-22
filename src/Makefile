@@ -7,7 +7,11 @@ include $(ENV_FILE)
 export
 endif
 
-.PHONY: deploy deploy-reset setup-nginx setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange-safe cloudflare-dns-orange-all bootstrap bootstrap-complete
+ifeq ($(strip $(WAHA_DOMAIN)),)
+WAHA_DOMAIN := waha.fc.danilloguimaraes.com.br
+endif
+
+.PHONY: deploy deploy-reset setup-nginx setup-nginx-certs setup-firewall healthcheck validate-final cloudflare-dns-gray cloudflare-dns-orange-safe cloudflare-dns-orange-all bootstrap bootstrap-complete
 
 deploy:
 	docker compose -f "$(COMPOSE_FILE)" --env-file "$(ENV_FILE)" down
@@ -19,7 +23,11 @@ deploy-reset:
 
 setup-nginx:
 	chmod +x "$(MAKEFILE_DIR)setup-nginx.sh"
-	LETSENCRYPT_EMAIL="$(LETSENCRYPT_EMAIL)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" "$(MAKEFILE_DIR)setup-nginx.sh"
+	LETSENCRYPT_EMAIL="$(LETSENCRYPT_EMAIL)" LE_STAGING="$(LE_STAGING)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" "$(MAKEFILE_DIR)setup-nginx.sh"
+
+setup-nginx-certs:
+	chmod +x "$(MAKEFILE_DIR)setup-nginx.sh"
+	LETSENCRYPT_EMAIL="$(LETSENCRYPT_EMAIL)" LE_STAGING="$(LE_STAGING)" ROOT_DOMAIN="$(ROOT_DOMAIN)" N8N_DOMAIN="$(N8N_DOMAIN)" WAHA_DOMAIN="$(WAHA_DOMAIN)" "$(MAKEFILE_DIR)setup-nginx.sh"
 
 setup-firewall:
 	chmod +x "$(MAKEFILE_DIR)setup-firewall.sh"

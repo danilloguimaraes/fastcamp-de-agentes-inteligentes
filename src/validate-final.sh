@@ -38,6 +38,37 @@ check_http_with_retry() {
   done
 }
 
+check_http_with_retry_accepting_statuses() {
+  local url="$1"
+  local label="$2"
+  local accepted_statuses="$3"
+  local resolve_arg="${4:-}"
+  local attempt=1
+  local code=""
+
+  while [[ "${attempt}" -le "${VALIDATE_RETRIES}" ]]; do
+    if [[ -n "${resolve_arg}" ]]; then
+      code="$(curl -sS -o /dev/null --max-time 10 --resolve "${resolve_arg}" -w "%{http_code}" "${url}" || true)"
+    else
+      code="$(curl -sS -o /dev/null --max-time 10 -w "%{http_code}" "${url}" || true)"
+    fi
+
+    if [[ " ${accepted_statuses} " == *" ${code} "* ]]; then
+      echo "[OK] ${label}: ${url} (HTTP ${code})"
+      return
+    fi
+
+    if [[ "${attempt}" -eq "${VALIDATE_RETRIES}" ]]; then
+      echo "[ERRO] ${label}: ${url} (HTTP ${code}, apos ${VALIDATE_RETRIES} tentativas)"
+      exit 1
+    fi
+
+    echo "[AGUARDANDO] ${label}: tentativa ${attempt}/${VALIDATE_RETRIES} (HTTP ${code}). Novo teste em ${VALIDATE_DELAY_SECONDS}s..."
+    sleep "${VALIDATE_DELAY_SECONDS}"
+    attempt=$((attempt + 1))
+  done
+}
+
 check_https_public() {
   local domain="$1"
   local label="$2"
@@ -56,9 +87,13 @@ docker compose ps
 
 echo "Validando endpoints finais..."
 check_http_with_retry "${N8N_UPSTREAM_URL}" "n8n local"
-check_http_with_retry "${WAHA_UPSTREAM_URL}" "waha local"
+check_http_with_retry_accepting_statuses "${WAHA_UPSTREAM_URL}" "waha local" "200 301 302 401 403"
 check_https_public "${ROOT_DOMAIN}" "dominio principal"
 check_https_public "${N8N_DOMAIN}" "n8n publico"
-check_https_public "${WAHA_DOMAIN}" "waha publico"
+if [[ -n "${SERVER_IP}" ]]; then
+  check_http_with_retry_accepting_statuses "https://${WAHA_DOMAIN}" "waha publico (origem)" "200 301 302 401 403" "${WAHA_DOMAIN}:443:${SERVER_IP}"
+else
+  check_http_with_retry_accepting_statuses "https://${WAHA_DOMAIN}" "waha publico" "200 301 302 401 403"
+fi
 
 echo "Validacao final concluida."

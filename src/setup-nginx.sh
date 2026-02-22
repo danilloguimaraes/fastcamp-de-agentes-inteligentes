@@ -9,6 +9,7 @@ N8N_UPSTREAM_PORT="${N8N_UPSTREAM_PORT:-5678}"
 WAHA_UPSTREAM_HOST="${WAHA_UPSTREAM_HOST:-127.0.0.1}"
 WAHA_UPSTREAM_PORT="${WAHA_UPSTREAM_PORT:-3000}"
 LETSENCRYPT_EMAIL="${LETSENCRYPT_EMAIL:-}"
+LE_STAGING="${LE_STAGING:-false}"
 
 if [[ ! -f /etc/os-release ]]; then
   echo "Nao foi possivel identificar o sistema operacional."
@@ -107,14 +108,24 @@ sudo_cmd systemctl restart nginx
 
 if [[ -n "${LETSENCRYPT_EMAIL}" ]]; then
   echo "Analisando/emissao de certificado por dominio (independente)..."
+  certbot_base_args=(
+    --nginx
+    --non-interactive
+    --agree-tos
+    --email "${LETSENCRYPT_EMAIL}"
+    --redirect
+    --keep-until-expiring
+  )
+  if [[ "${LE_STAGING}" == "true" ]]; then
+    certbot_base_args+=(--staging)
+    echo "Modo staging do Let's Encrypt habilitado."
+  fi
+
   for domain in "${ROOT_DOMAIN}" "${N8N_DOMAIN}" "${WAHA_DOMAIN}"; do
     echo "- Processando ${domain}"
-    sudo_cmd certbot --nginx \
-      --non-interactive \
-      --agree-tos \
-      --email "${LETSENCRYPT_EMAIL}" \
-      --redirect \
-      --keep-until-expiring \
+    sudo_cmd certbot \
+      "${certbot_base_args[@]}" \
+      --cert-name "${domain}" \
       -d "${domain}"
   done
 else
