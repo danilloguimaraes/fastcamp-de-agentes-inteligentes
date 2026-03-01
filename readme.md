@@ -24,6 +24,13 @@
 
 ### 6 - Prática: Embedding (II)
 - [How to Get Started With Qdrant Cloud](https://qdrant.tech/documentation/cloud-quickstart/)
+    - What is QDrant? Qdrant is an AI-native vector database for iterating on high-dimensional (embbedings) vectors efficiently. 
+    - What is its purpose? Its primary purpose is to enable semantic search and similarity-based retrieval at scale.
+    - Why Vector Databases Exist? Traditional databases index structured fields (text, numbers, dates). Modern AI systems generate embeddings (dense numerical vectors representing meaning). Example: A sentence transformed into a 768-dimensional vector or an image transformed into a 512-dimensional vector. You don’t search these with SQL equality. You search them using nearest-neighbor similarity.
+    - While dense vectors excel at capturing context, they can sometimes miss specific technical terms or unique identifiers. To bridge this gap, Qdrant also utilizes sparse vectors designed to capture precise lexical matches for specific keywords. Learn more in this guide.
+    - Additional source: https://qdrant.tech/documentation/overview/
+
+That is where Qdrant fits.
 - [n8n AI Agents with Qdrant Vector Store Knowledge Base](https://www.youtube.com/watch?v=cCDAY0nb0T0)
 
 ## Atividades do curso
