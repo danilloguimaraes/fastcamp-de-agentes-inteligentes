@@ -33,6 +33,26 @@
 That is where Qdrant fits.
 - [n8n AI Agents with Qdrant Vector Store Knowledge Base](https://www.youtube.com/watch?v=cCDAY0nb0T0)
 
+### 7 - Leitura: n8n (II)
+- [Introducing the Self-hosted AI Starter Kit: Run AI locally for privacy-first solutions](https://blog.n8n.io/self-hosted-ai/)
+- [What You Need to Know Before Using It](https://autogpt.net/ai-tool/n8n/)
+
+### 8 - Pratica: Agentes com Google ADK (III)
+- [How To Get Your FREE Google Gemini API Key](https://www.youtube.com/watch?v=6BRyynZkvf0)
+  - Aprende-se como gerar uma apikey do gemini api.  
+- [Quickstart Google ADK](https://google.github.io/adk-docs/get-started/quickstart/)
+  - Ensina a construir uma estrutura para adequar um projeto de agentes utilizando o adk. 
+  - ADK é um framework projetado para facilitar o desenvolviemnto de aplicações que utilizam LLMs. 
+  - O que mais vimos 
+    - Tool Definition & Usage: Python functions (tools) that grant agents specific abilities (like fetching data) and instructing agents on how to use them effectively.
+    - Multi-LLM Flexibility: Configuring agents to utilize various leading LLMs (Gemini, GPT-4o, Claude Sonnet) via LiteLLM integration, allowing you to choose the best model for each task. 
+    - Agent Delegation & Collaboration:  Designing specialized sub-agents and enabling automatic routing (auto flow) of user requests to the most appropriate agent within a team. 
+    - Session State for Memory: Utilizing Session State and ToolContext to enable agents to remember information across conversational turns, leading to more contextual interactions.
+    - Safety Guardrails with Callbacks: Implementing before_model_callback and before_tool_callback to inspect, modify, or block requests/tool usage based on predefined rules, enhancing application safety and control.
+
+- [Construa sua primeira equipe de agentes inteligentes: um bot meteorológico progressivo com ADK](https://google.github.io/adk-docs/tutorials/agent-team/)
+- [Kit de Desenvolvimento de Agentes](https://google.github.io/adk-docs/)
+
 ## Atividades do curso
 As atividades dos cards estão disponíveis no diretório [atividades_aulas](./atividades_aulas/)
 
